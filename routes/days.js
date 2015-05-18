@@ -5,6 +5,11 @@ var attractionRouter = express.Router()
 var models = require('../models')
 var Day = models.Day
 
+function spliceItems(attraction,id){
+    var i = attraction.indexOf(id)
+    return attraction.splice(i,1)
+}
+
 // GET /days
 dayRouter.get('/', function (req, res, next) {
     Day.find(function(err,results){
@@ -44,7 +49,8 @@ dayRouter.get('/:id', function (req, res, next) {
 dayRouter.delete('/:id', function (req, res, next) {
     // deletes a particular day
     Day.remove({'number': req.params.id},function(err,day){
-    	res.json(day)
+        console.log("DELETE DAY",req.params)
+    	res.json(req.id)
     })
 });
 
@@ -56,7 +62,7 @@ attractionRouter.post('/hotel', function (req, res, next) {
     Day.findOne({number: req.id},function(err,results){
     	if(err) next(err)
 
-    	results.hotel = req.body.hotelId
+    	results.hotel = req.body.attractionId
     	results.save()
     	console.log("UPDATE DAY WITH HOTEL",results)
     	res.json(results)
@@ -82,49 +88,48 @@ attractionRouter.post('/restaurants', function (req, res, next) {
     Day.findOne({number: req.id},function(err,results){
     	if(err) next(err)
 
-    	results.restaurants.push(req.body.restaurantId)
+    	results.restaurants.push(req.body.attractionId)
     	results.save()
     	res.json(results)
     })
 });
 
-
-function spliceItems(attraction,id){
-	var i = attraction.indexOf(id)
-	return attraction.splice(i,1)
-}
 
 
 // DELETE /days/:dayId/restaurants/:restId
 attractionRouter.delete('/restaurant/:id', function (req, res, next) {
     // deletes a reference to a restaurant
      Day.findOne({number: req.id},function(err,results){
-    	if(err) next(err)
-    	spliceItems(results.restaurants,req.params.id)
-    	results.save()
-    	res.json(results)
+        if(err) next(err)
+
+        console.log("REST ID",req.params.id)
+        spliceItems(results.restaurants,req.params.id)
+        results.save()
+        res.json(results)
     })
 });
 // POST /days/:id/thingsToDo
 attractionRouter.post('/thingsToDo', function (req, res, next) {
     // creates a reference to a thing to do
     Day.findOne({number: req.id},function(err,results){
-    	if(err) next(err)
+        if(err) next(err)
 
-    	results.thingsToDo.push(req.body.thingId)
-    	results.save()
-    	res.json(results)
+        results.thingsToDo.push(req.body.attractionId)
+        results.save()
+        res.json(results)
     })
 });
 // DELETE /days/:dayId/thingsToDo/:thingId
 attractionRouter.delete('/thingsToDo/:id', function (req, res, next) {
     // deletes a reference to a thing to do
     Day.findOne({number: req.id},function(err,results){
-    	if(err) next(err)
-    	spliceItems(results.thingsToDo,req.params.id)
-    	results.save()
-    	res.json(results)
+        if(err) next(err)
+        spliceItems(results.thingsToDo,req.params.id)
+        results.save()
+        res.json(results)
     })
+
+
 });
 
 
