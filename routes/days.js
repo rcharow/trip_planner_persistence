@@ -20,7 +20,7 @@ dayRouter.post('/', function (req, res, next) {
     Day.find().exec(function(err,days){
 	    Day.create({number: days.length + 1, hotel: null, restaurants: [], thingsToDo: [] },function(err,day){
 	    	console.log("DAY CREATED: ",day)
-	    	res.json(day)
+	    	res.json({days: day.number})
 	    })
     })
     

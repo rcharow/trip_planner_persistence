@@ -15,7 +15,7 @@
 			  		</h5>
 						<select id="cboHotel" class="block-select form-control">
 							{% for hotel in hotels %}
-							<option>{{hotel.name}}</option>
+							<option value={{hotel.id}}>{{hotel.name}}</option>
 							{% endfor %}
 						</select>
 						<h5>
@@ -23,7 +23,7 @@
 				  		</h5>
 						<select id="cboRestaurant" class="block-select form-control">
 							{% for restaurant in restaurants %}
-							<option>{{restaurant.name}}</option>
+							<option value={{restaurant.id}}>{{restaurant.name}}</option>
 							{% endfor %}
 						</select>
 						<h5>
@@ -31,7 +31,7 @@
 				  		</h5>
 						<select id="cboThing" class="block-select form-control">
 							{% for thing in things_to_do %}
-							<option>{{thing.name}}</option>
+							<option value={{thing.id}}>{{thing.name}}</option>
 							{% endfor %}
 						</select>
 			  </div>
@@ -93,5 +93,5 @@
 		var all_things_to_do = {{ things_to_do | json }};
 	{% endautoescape %}
 </script>
-<script type="text/javascript" src="/javascript/itinerary.js"></script>
+<script type="text/javascript" src="/javascript/itineraryPersist.js"></script>
 {% endblock %}
