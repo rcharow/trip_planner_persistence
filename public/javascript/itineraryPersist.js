@@ -35,19 +35,21 @@ function addDay(){
 
 function deleteDay(){
 	var activeDay = $('#days>.btn-active')
-	console.log("ACTIVE DAY",activeDay.data('id'))
+	//console.log("ACTIVE DAY",activeDay.data('id'))
 	$.ajax({
 		type: "delete",
 		url: "/days/"+activeDay.text(),
 		success: function(responseData){
 
 			//remove button 
-			activeDay.remove();
+			// activeDay.remove();
 
 			//change to active day
-			var numChildren = $('#days').children().length
-			changeDay.call($('#days').children()[numChildren-2])
-
+			// var numChildren = $('#days').children().length
+			// changeDay.call($('#days').children()[numChildren-2])
+			$(".days").remove();
+			clearItineraryPanel();
+			initItinerary();
 		}
 	})
 }
@@ -85,7 +87,6 @@ function getDay(dayNum){
 }
 
 function populateItineraryPanel(day){
-	debugger
 	//hotels 
 	if(day.hotel){
 		$('<div class="itinerary-item">' +
@@ -132,7 +133,6 @@ function addAttraction(){
 		'<button class="btn btn-xs btn-danger remove btn-delete-circle pull-right">x</button></div>')
 		.appendTo(attractionElements.list)
 
-		debugger
 		updateItinerary(parseInt($('#days>.btn-active').text()),attractionElements,attractionId)
 		//var marker = addMapMarker('hotel',$('#cboHotel').val())
 	}
