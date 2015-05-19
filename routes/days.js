@@ -12,11 +12,16 @@ function spliceItems(attraction,id){
 
 // GET /days
 dayRouter.get('/', function (req, res, next) {
-    Day.find(function(err,results){
-    	if(err)
-    		next(err)
-    	console.log(results)
-    	res.json(results)
+    // Day.find(function(err,results){
+    // 	if(err)
+    // 		next(err)
+    // 	console.log(results)
+    // 	res.json(results)
+    // })
+    Day.find().populate('hotel restaurants thingsToDo').exec(function(err,days){
+        if(err) next(err)
+
+        res.json(days)
     })
 });
 // POST /days
@@ -40,8 +45,11 @@ dayRouter.use('/:id', function(req, res, next) {
 // GET /days/:id
 dayRouter.get('/:id', function (req, res, next) {
     // serves a particular day as json
-    Day.findOne({'number': req.params.id},function(err,day){
-    	res.json(day)
+  
+    Day.findOne({'number': req.params.id}).populate('hotel restaurants thingsToDo').exec(function(err,day){
+        if(err) next(err)
+
+        res.json(day)
     })
 
 });
@@ -70,7 +78,7 @@ attractionRouter.post('/hotel', function (req, res, next) {
 
 });
 // DELETE /days/:id/hotel
-attractionRouter.delete('/hotel', function (req, res, next) {
+attractionRouter.delete('/hotel/:id', function (req, res, next) {
     // deletes the reference of the hotel
       Day.findOne({number: req.id},function(err,results){
     	if(err) next(err)

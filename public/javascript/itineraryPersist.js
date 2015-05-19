@@ -1,3 +1,24 @@
+function initItinerary(){
+	$.ajax({
+		type: "get",
+		url: "/days",
+		success: function(responseData){
+			initDayButtons(responseData)
+			populateItineraryPanel(responseData[0])
+		}
+	})
+}
+
+function initDayButtons(days)
+{
+	days.forEach(function(day,i){
+		var num = day.number
+		$('<button data-id="'+ num +'" class="btn btn-default btn-circle days">'+ num +'</button>').insertBefore(".add")
+
+	})
+	$('#days').children().first().addClass('btn-active')
+}
+
 function addDay(){
 	$.ajax({
 		type: "post",
@@ -6,7 +27,6 @@ function addDay(){
 			$('<button data-id="'+ responseData.days +'" class="btn btn-default btn-circle days">'+ responseData.days +'</button>').insertBefore(".add")
 
 			//changeDay.call($('#days').children()[responseData.days-1]);
-			console.log("LENGTH",$('#days').children().length)
 			var numChildren = $('#days').children().length
 			changeDay.call($('#days').children()[numChildren-2])
 		}
@@ -37,14 +57,62 @@ function changeDay(newDay){
 	$(this).addClass('btn-active')
 	$('#day-title').text("Day "+ $(this).text())
 
-	if(prevDay.length){
+	if(prevDay.length)
 		prevDay.removeClass('btn-active')
+
+	clearItineraryPanel()
 		
-	//get data for current day
+	getDay($(this).text())
 
+	
+}
 
-	//populate panel with current day
+function clearItineraryPanel(){
+	$('#hotelList').empty()
+	$('#restaurantList').empty()
+	$('#thingsList').empty()
+}
 
+function getDay(dayNum){
+	$.ajax({
+		type: 'get',
+		url: '/days/'+dayNum,
+		success: function(responseData){
+			console.dir("DAY",responseData)
+			populateItineraryPanel(responseData)
+		}
+	})
+}
+
+function populateItineraryPanel(day){
+	debugger
+	//hotels 
+	if(day.hotel){
+		$('<div class="itinerary-item">' +
+			'<span data-attId="'+ day.hotel._id +'" data-class="title">'+ day.hotel.name + '</span>' +
+			'<button class="btn btn-xs btn-danger remove btn-delete-circle pull-right">x</button></div>')
+		.appendTo('#hotelList')
+	}
+
+	//restaurants
+	console.dir(day)
+	if(day.restaurants.length){
+		day.restaurants.forEach(function(r){
+			$('<div class="itinerary-item">' +
+			'<span data-attId="'+ r._id +'" data-class="title">'+ r.name + '</span>' +
+			'<button class="btn btn-xs btn-danger remove btn-delete-circle pull-right">x</button></div>')
+		.appendTo('#restaurantList')
+		})
+	}
+
+	//things
+	if(day.thingsToDo.length){
+		day.thingsToDo.forEach(function(t){
+			$('<div class="itinerary-item">' +
+			'<span data-attId="'+ t._id +'" data-class="title">'+ t.name + '</span>' +
+			'<button class="btn btn-xs btn-danger remove btn-delete-circle pull-right">x</button></div>')
+		.appendTo('#thingsList')
+		})
 	}
 }
 
@@ -64,6 +132,7 @@ function addAttraction(){
 		'<button class="btn btn-xs btn-danger remove btn-delete-circle pull-right">x</button></div>')
 		.appendTo(attractionElements.list)
 
+		debugger
 		updateItinerary(parseInt($('#days>.btn-active').text()),attractionElements,attractionId)
 		//var marker = addMapMarker('hotel',$('#cboHotel').val())
 	}
@@ -160,3 +229,7 @@ $('#btnAddThing').on('click',addAttraction)
 
 $('#itinerary').delegate('.remove', 'click', removeItineraryItem)
 $('#days').delegate('.days', 'click', changeDay);
+
+$(document).ready(function() {
+    initItinerary()
+});
